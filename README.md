@@ -1,4 +1,23 @@
-# InstructTime
+<div align="center">
+  <!-- <h1><b> Time-LLM </b></h1> -->
+  <!-- <h2><b> Time-LLM </b></h2> -->
+  <h2><b> InstructTime: Advancing Time Series Classification with Multimodal Language Modeling </b></h2>
+</div>
+
+---
+>
+> 🙋 Please let us know if you find out a mistake or have any suggestions!
+> 
+> 🌟 If you find this resource helpful, please consider to star this repository and cite our research:
+
+```
+@article{cheng2024advancing,
+  title={Advancing Time Series Classification with Multimodal Language Modeling},
+  author={Cheng, Mingyue and Chen, Yiheng and Liu, Qi and Liu, Zhiding and Luo, Yucong},
+  journal={arXiv preprint arXiv:2403.12371},
+  year={2024}
+}
+```
 
 ## Project Overview
 
