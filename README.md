@@ -1,7 +1,7 @@
 <div align="center">
   <!-- <h1><b> Time-LLM </b></h1> -->
   <!-- <h2><b> Time-LLM </b></h2> -->
-  <h2><b> InstructTime: Advancing Time Series Classification with Multimodal Language Modeling </b></h2>
+  <h2><b> InstructTime: Advancing Time Series Classification with Multimodal Language Modeling (WSDM2025, Accepted) </b></h2>
 </div>
 
 ---
