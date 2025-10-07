@@ -7,15 +7,16 @@
 ---
 >
 > 🙋 Please let us know if you find out a mistake or have any suggestions!
-> 📄 **[Read our paper on arXiv](https://arxiv.org/abs/2403.12371)**
+> 📄 **[Read our paper on arXiv](https://dl.acm.org/doi/abs/10.1145/3701551.3703499)**
 > 🌟 If you find this resource helpful, please consider to star this repository and cite our research:
 
 ```
-@article{cheng2024advancing,
-  title={Advancing Time Series Classification with Multimodal Language Modeling},
-  author={Cheng, Mingyue and Chen, Yiheng and Liu, Qi and Liu, Zhiding and Luo, Yucong},
-  journal={arXiv preprint arXiv:2403.12371},
-  year={2024}
+@inproceedings{cheng2025instructime,
+  title={Instructime: Advancing time series classification with multimodal language modeling},
+  author={Cheng, Mingyue and Chen, Yiheng and Liu, Qi and Liu, Zhiding and Luo, Yucong and Chen, Enhong},
+  booktitle={Proceedings of the Eighteenth ACM International Conference on Web Search and Data Mining},
+  pages={792--800},
+  year={2025}
 }
 ```
 
