@@ -7,7 +7,7 @@
 ---
 >
 > 🙋 Please let us know if you find out a mistake or have any suggestions!
-> 📄 **[Read our paper on arXiv](https://dl.acm.org/doi/abs/10.1145/3701551.3703499)**
+> 📄 **[Read our paper(https://dl.acm.org/doi/abs/10.1145/3701551.3703499)**
 > 🌟 If you find this resource helpful, please consider to star this repository and cite our research:
 
 ```
