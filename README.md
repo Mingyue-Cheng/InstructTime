@@ -19,7 +19,8 @@
   year={2025}
 }
 ```
-![Uploading 截屏2025-10-18 13.32.05.png…]()
+<img width="1279" height="432" alt="截屏2025-10-18 13 32 05" src="https://github.com/user-attachments/assets/d0a34379-b1f3-434f-a7ae-fac69f843207" />
+
 
 ## Project Overview
 
