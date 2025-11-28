@@ -4,7 +4,7 @@
   <p><b>ACM WSDM 2025</b></p>
   
   <a href="https://dl.acm.org/doi/abs/10.1145/3701551.3703499"><img src="https://img.shields.io/badge/Paper-ACM%20DL-blue" alt="Paper"></a>
-  <a href="https://huggingface.co/datasets/zhjai/InstructTime"><img src="https://img.shields.io/badge/🤗%20Dataset-InstructTime-yellow" alt="Dataset"></a>
+  <a href="https://huggingface.co/datasets/zhjai/InstructTime/tree/main"><img src="https://img.shields.io/badge/🤗%20Dataset-InstructTime-yellow" alt="Dataset"></a>
   <a href="https://huggingface.co/openai-community/gpt2"><img src="https://img.shields.io/badge/🤗%20Model-GPT--2-orange" alt="Model"></a>
 </div>
 
