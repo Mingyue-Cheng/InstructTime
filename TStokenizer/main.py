@@ -9,7 +9,7 @@ warnings.filterwarnings('ignore')
 from dataset import Dataset
 from args import args
 from process import Trainer
-from model import VQVAE
+from model import TStokenizer
 import torch.utils.data as Data
 
 def seed_everything(seed):
@@ -34,7 +34,7 @@ def main():
     print(args.data_shape)
     print('dataset initial ends')
 
-    model = VQVAE(data_shape=args.data_shape, hidden_dim=args.d_model, n_embed=args.n_embed, block_num=args.block_num,
+    model = TStokenizer(data_shape=args.data_shape, hidden_dim=args.d_model, n_embed=args.n_embed, block_num=args.block_num,
                     wave_length=args.wave_length)
     print('model initial ends')
 

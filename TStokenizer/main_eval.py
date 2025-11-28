@@ -16,6 +16,7 @@ from args import args
 import torch.utils.data as Data
 
 from matplotlib.ticker import FuncFormatter
+from model import TStokenizer
 
 def seed_everything(seed):
     random.seed(seed)
@@ -145,7 +146,7 @@ def plot_square_like_heatmap(id_counts, save_path, shape=(8, 16), font_size=24):
 
 def main():
     seed_everything(seed=2023)
-    model_load_path = './test_ecg_64_128_40'
+    model_load_path = args.model_load_path
     output = []
 
     train_dataset = Dataset(device=args.device, mode='train', args=args)
@@ -156,7 +157,7 @@ def main():
     print(args.data_shape)
     print('dataset initial ends')
 
-    model = VQVAE(data_shape=args.data_shape, hidden_dim=args.d_model, n_embed=args.n_embed,
+    model = TStokenizer(data_shape=args.data_shape, hidden_dim=args.d_model, n_embed=args.n_embed,
                     wave_length=args.wave_length)
     print('model initial ends')
 
@@ -187,7 +188,7 @@ def main():
     save_output_to_file(''.join(output), os.path.join(model_load_path, 'model_output.txt'))
     print("Texts have been saved.")
 
-    file_path = '../ecg_no_big'
+    file_path = args.data_path
     test_path = os.path.join(file_path, 'samples_test.pkl')
     samples_test = []
     if os.path.isfile(test_path):

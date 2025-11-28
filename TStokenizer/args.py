@@ -5,7 +5,7 @@ from datautils import load_all_data
 
 parser = argparse.ArgumentParser()
 # dataset and dataloader args
-parser.add_argument('--save_path', type=str, default='./test')
+parser.add_argument('--save_path', type=str, default='../vqvae')
 parser.add_argument('--dataset', type=str, default='sleep', choices=['har', 'geo', 'sleep', 'dev', 'ecg', 'whale', 'ad', 'esr'])
 parser.add_argument('--data_path', type=str, default=None)
 parser.add_argument('--device', type=str, default='cuda:0')
@@ -37,19 +37,19 @@ parser.add_argument('--num_epoch', type=int, default=60)
 args = parser.parse_args()
 if args.data_path is None:
     if args.dataset == 'har':
-        Train_data, Test_data = load_all_data('../har_no_big')
+        Train_data, Test_data = load_all_data('../datasets/HAR')
     elif args.dataset == 'geo':
-        Train_data, Test_data = load_all_data('../ecg_no_big')
+        Train_data, Test_data = load_all_data('../datasets/ECG')
     elif args.dataset == 'dev':
-        Train_data, Test_data = load_all_data('../device_no_big')
+        Train_data, Test_data = load_all_data('../datasets/FD')
     elif args.dataset == 'whale':
-        Train_data, Test_data = load_all_data('../whale_no_big')
+        Train_data, Test_data = load_all_data('../datasets/RWC')
     elif args.dataset == 'ad':
-        Train_data, Test_data = load_all_data('../ad_no_big')
+        Train_data, Test_data = load_all_data('../datasets/AD')
     elif args.dataset == 'esr':
-        Train_data, Test_data = load_all_data('../esr_no_big')
-    else:
-        Train_data, Test_data = load_all_data('../eeg_no_big')
+        Train_data, Test_data = load_all_data('../datasets/ESR')
+    elif args.dataset == 'sleep':
+        Train_data, Test_data = load_all_data('../datasets/EEG')
 else:
     path = args.data_path
     if args.dataset == 'har':
@@ -65,6 +65,8 @@ else:
     elif args.dataset == 'ad':
         Train_data, Test_data = load_all_data(path)
     elif args.dataset == 'esr':
+        Train_data, Test_data = load_all_data(path)
+    elif args.dataset == 'sleep':
         Train_data, Test_data = load_all_data(path)
     else:
         Train_data, Test_data = load_all_data(path)
