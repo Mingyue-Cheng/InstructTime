@@ -70,38 +70,83 @@ cd InstructTime
 # Install dependencies
 pip install -r requirements.txt
 
-# Download GPT-2 model from HuggingFace
-# The model will be automatically downloaded, or you can manually place it in ./gpt2/
+# Download GPT-2 model from HuggingFace (required)
+# Option 1: Using huggingface-cli
+huggingface-cli download openai-community/gpt2 --local-dir ./gpt2
+
+# Option 2: Using git lfs
+git lfs install
+git clone https://huggingface.co/openai-community/gpt2 ./gpt2
 ```
 
 ## Usage
 
 ### Step 1: Train TStokenizer (Time Series Tokenizer)
 
-First, train the VQ-VAE based time series tokenizer for each domain:
+First, train the VQ-VAE based time series tokenizer for each domain.
+
+**Parameters for each dataset** (format: `d_model`, `n_embed`, `wave_length`):
+
+| Dataset | d_model | n_embed | wave_length |
+|---------|---------|---------|-------------|
+| ECG (geo) | 64 | 128 | 40 |
+| EEG (sleep) | 64 | 256 | 25 |
+| FD (dev) | 64 | 512 | 40 |
+| HAR | 64 | 256 | 1 |
+| RWC (whale) | 64 | 384 | 32 |
 
 ```bash
 cd TStokenizer
 
-# Example: Train tokenizer for HAR dataset
+# Train tokenizer for HAR dataset
 python main.py \
-    --save_path ../vqvae/har_tokenizer \
+    --save_path ../vqvae/HAR \
     --dataset har \
     --data_path ../datasets/HAR \
     --device cuda:0 \
     --d_model 64 \
-    --wave_length 25 \
-    --n_embed 2560
+    --n_embed 256 \
+    --wave_length 1
 
-# Example: Train tokenizer for EEG (sleep) dataset
+# Train tokenizer for EEG (sleep) dataset
 python main.py \
-    --save_path ../vqvae/eeg_tokenizer \
+    --save_path ../vqvae/EEG \
     --dataset sleep \
     --data_path ../datasets/EEG \
     --device cuda:0 \
     --d_model 64 \
-    --wave_length 25 \
-    --n_embed 2560
+    --n_embed 256 \
+    --wave_length 25
+
+# Train tokenizer for ECG (geo) dataset
+python main.py \
+    --save_path ../vqvae/ECG \
+    --dataset geo \
+    --data_path ../datasets/ECG \
+    --device cuda:0 \
+    --d_model 64 \
+    --n_embed 128 \
+    --wave_length 40
+
+# Train tokenizer for FD (dev) dataset
+python main.py \
+    --save_path ../vqvae/FD \
+    --dataset dev \
+    --data_path ../datasets/FD \
+    --device cuda:0 \
+    --d_model 64 \
+    --n_embed 512 \
+    --wave_length 40
+
+# Train tokenizer for RWC (whale) dataset
+python main.py \
+    --save_path ../vqvae/RWC \
+    --dataset whale \
+    --data_path ../datasets/RWC \
+    --device cuda:0 \
+    --d_model 64 \
+    --n_embed 384 \
+    --wave_length 32
 ```
 
 ### Step 2: Train InstructTime
@@ -120,7 +165,7 @@ python run_truth_loss.py \
     --device cuda:0 \
     --epochs 15 \
     --batch_size 16 \
-    --lr 1e-5
+    --lr 5e-5
 
 # Multi-domain training
 python run_truth_loss.py \
@@ -129,7 +174,9 @@ python run_truth_loss.py \
     --data_root ./datasets \
     --vqvae_root ./vqvae \
     --device cuda:0 \
-    --epochs 15
+    --epochs 15 \
+    --batch_size 16 \
+    --lr 5e-5
 ```
 
 #### Adaptation Training (Fine-tune from Pretrained)
@@ -137,12 +184,12 @@ python run_truth_loss.py \
 ```bash
 python run_truth_loss.py \
     --dataset har \
-    --model_path ./gptmodel \
-    --load_model_path ./gptmodel/pretrained/best_model \
+    --model_path ./gptmodel/har \
+    --load_model_path ./gptmodel/no_frozen/run_0/best_model \
     --data_root ./datasets \
     --vqvae_root ./vqvae \
     --device cuda:0 \
-    --lr 1e-6 \
+    --lr 1e-5 \
     --adapt
 ```
 
