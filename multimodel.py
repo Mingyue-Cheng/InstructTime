@@ -4,8 +4,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
-local_model_path = "./gpt2-model"
-local_tokenizer_path = "./gpt2-tokenizer"
+local_model_path = "./gpt2"
+local_tokenizer_path = "./gpt2"
 
 class MLP(nn.Module):
     def __init__(self, input_dim, hidden_dims, output_dim):
@@ -90,13 +90,20 @@ class InstructTime(GPT2LMHeadModel):
         return outputs    
 
 class MultiTokenizer:
-    def __init__(self, ecgTokenizers) -> None:
+    def __init__(self, ecgTokenizers, dataset_keys=None) -> None:
         self.textTokenizer = GPT2Tokenizer.from_pretrained(local_tokenizer_path)
+        # Keep tokenizer behavior consistent with the original; padding is controlled at the dataset level
         new_special_tokens = ["<BET>", "<EET>"]
         self.textTokenizer.add_special_tokens({"additional_special_tokens": new_special_tokens})
         self.text_vocab_size = len(self.textTokenizer)
 
         self.ecgTokenizers = ecgTokenizers
+        if dataset_keys is None:
+            dataset_keys = [str(idx) for idx in range(len(ecgTokenizers))]
+        if len(dataset_keys) != len(ecgTokenizers):
+            raise ValueError("dataset_keys and ecgTokenizers must have the same length.")
+        self.dataset_keys = [key.lower() if isinstance(key, str) else str(key) for key in dataset_keys]
+        self.key_to_index = {key: idx for idx, key in enumerate(self.dataset_keys)}
 
         self.pad_token_id = self.textTokenizer.eos_token_id
         self.eos_token_id = self.textTokenizer.eos_token_id
@@ -114,17 +121,22 @@ class MultiTokenizer:
     def vocabSize_all(self):
         return self.text_vocab_size + sum(tokenizer.n_embed for tokenizer in self.ecgTokenizers)
 
-    def encode(self, input, model_id=1):
+    def get_model_index(self, dataset_key: str) -> int:
+        key = dataset_key.lower()
+        if key not in self.key_to_index:
+            raise ValueError(f"Dataset key '{dataset_key}' not found in tokenizer mapping.")
+        return self.key_to_index[key]
+
+    def encode(self, input, model_id=0):
         if isinstance(input, str):
             return self.textTokenizer(input)["input_ids"]
         elif isinstance(input, torch.Tensor):
-            input = input.to('cpu')
+            input = input.to("cpu")
             if model_id < len(self.ecgTokenizers):
                 tokenizer_index = model_id
                 _, _, indices = self.ecgTokenizers[tokenizer_index](input)
                 return indices + self.offsets[tokenizer_index]
-            else:
-                raise ValueError(f"Invalid model_id. Please provide a number between 0 and {len(self.ecgTokenizers)}.")
+            raise ValueError(f"Invalid model_id. Please provide a number between 0 and {len(self.ecgTokenizers)}.")
         else:
             raise ValueError("Unsupported input type. Please provide either a string or a torch.Tensor.")
         

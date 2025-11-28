@@ -25,16 +25,16 @@ def normalize(ecg):
     if (max_val - min_val) == 0:
         return ecg
 
-    # 进行最大-最小归一化
+    # Apply min-max normalization
     normalized_ecg = (ecg - min_val) / (max_val - min_val)
 
     return (normalized_ecg - 0.5) * 2
 
 def denoising(data):
-    # 初始化一个空矩阵来存储处理后的数据
+    # Initialize an empty matrix to store processed data
     ecg_cleaned = np.zeros_like(data)
 
-    # 循环处理每个通道
+    # Process each channel in a loop
     for i in range(data.shape[1]):
         channel_data = data[:, i]
         ecg_cleaned[:, i] = nk.ecg_clean(channel_data, sampling_rate=500)
@@ -61,8 +61,8 @@ def trans_code(label_list):
         427172004: 17338001
     }
 
-    # 使用列表推导式提高效率
-    # 如果编码不在映射中，保持不变
+    # Use list comprehension for efficiency
+    # If a code is not in the mapping, keep it unchanged
     new_labelist = [code_mapping.get(code, code) for code in label_list]
     return new_labelist
 
@@ -155,10 +155,10 @@ def remove_before_colon(input_string):
 
 def get_dictionaries(path='C:/Users/ROG/Desktop/ConditionNames_SNOMED-CT.csv'):
     try:
-        # 仅加载需要的列以减少内存占用
+        # Load only the required columns to reduce memory usage
         mapping_data = pd.read_csv(path, usecols=['Snomed_CT', 'Full Name'])
 
-        # 使用 pandas 的 to_dict 方法进行快速转换
+        # Use pandas to_dict for fast conversion
         dict_snomed_to_name = mapping_data.set_index('Snomed_CT')['Full Name'].to_dict()
         dict_snomed_to_index = dict_snomed_to_index = mapping_data.reset_index().set_index('Snomed_CT')['index'].to_dict()
 
@@ -242,7 +242,7 @@ def process_12_lead_shot(data_folder='./data/12-lead/WFDBRecords/', only_label=F
 
     test_fewshot = []
     for label_index, samples_list in label_to_samples_map_fewshot.items():
-        # 从每个类别中选择七个样本并保留它们作为测试样本
+        # Select seven samples from each class and keep them as test samples
         selected_samples = samples_list[-7:]
         test_fewshot.extend(selected_samples)
 
@@ -259,7 +259,7 @@ def process_12_lead_shot(data_folder='./data/12-lead/WFDBRecords/', only_label=F
     
     train_oneshot = []
     for label_index, samples_fewshot in label_to_samples_map_oneshot.items():
-        # 从每个类别中选择一个样本并保留它作为训练样本
+        # Select one sample from each class and keep it as a training sample
         selected_sample = samples_fewshot.pop()
         train_oneshot.append(selected_sample)
 
@@ -827,16 +827,16 @@ def process_eeg(data_folder='./data/sleep-edf-database-1.0.0'):
     labels = np.load(os.path.join(data_folder, 'label.npy'))
     ecgs = np.load(os.path.join(data_folder, 'data.npy'))
 
-    # 遍历数组并规范化
+    # Iterate over the array and normalize
     prefix = "Select a previously mentioned sleep pattern and report on the person's sleep using the provided information.\nThe person's sleep pattern is "
     midfix = 'The sleep patterns include waking up, rapid eye movement sleep, and sleep stages one through four, as well as periods of movement and unidentified stages.\n'
     for ecg, label in zip(ecgs, labels):
-        # 检查是否为 NaN 值
+        # Check whether values are NaN
         if np.isnan(ecg).any():
-            continue  # 丢弃包含 NaN 值的 ECG 数据
+            continue  # Drop ECG samples that contain NaN values
             
-        # 执行规范化操作，并将结果添加到列表中
-        ecg = normalize(ecg)  # 使用您的规范化函数
+        # Normalize the data and append the result to the list
+        ecg = normalize(ecg)  # Using the normalize() helper
         # print(label)
         if int(label) == 0:
             text = 'waking up'
@@ -895,17 +895,17 @@ def process_har(data_folder='./data/HAR'):
     samples = np.concatenate([samples_train, samples_val], axis=0)
     labels = np.concatenate([labels_train, labels_val], axis=0)
 
-    # 遍历数组并规范化
+    # Iterate over the array and normalize
     prefix = "Please choose one activity from the previously mentioned six options and analyze the individual's physical activity based on the provided information.\nThe individual is currently engaged in "
     midfix = 'Physical activities such as walking, ascending stairs, descending stairs, sitting, standing, and lying down are recorded using mobile phone sensors.\n'
     
     for ecg, label in zip(samples, labels):
-        # 检查是否为 NaN 值
+        # Check whether values are NaN
         if np.isnan(ecg).any():
-            continue  # 丢弃包含 NaN 值的 ECG 数据
+            continue  # Drop ECG samples that contain NaN values
             
-        # 执行规范化操作，并将结果添加到列表中
-        ecg = normalize(ecg.astype(np.float32))  # 使用您的规范化函数
+        # Normalize the data and append the result to the list
+        ecg = normalize(ecg.astype(np.float32))  # Using the normalize() helper
         ecg = ecg.transpose()
 
         if int(label) == 0:
@@ -931,12 +931,12 @@ def process_har(data_folder='./data/HAR'):
             normalized_samples_train.append((text, ecg, label_vector))
     
     for ecg, label in zip(samples_test, labels_test):
-        # 检查是否为 NaN 值
+        # Check whether values are NaN
         if np.isnan(ecg).any():
-            continue  # 丢弃包含 NaN 值的 ECG 数据
+            continue  # Drop ECG samples that contain NaN values
             
-        # 执行规范化操作，并将结果添加到列表中
-        ecg = normalize(ecg.astype(np.float32))  # 使用您的规范化函数
+        # Normalize the data and append the result to the list
+        ecg = normalize(ecg.astype(np.float32))  # Using the normalize() helper
         ecg = ecg.transpose()
 
         if int(label) == 0:
@@ -989,16 +989,16 @@ def process_ad(data_folder='./datas/AD_data'):
     samples_test = data_test['samples'].numpy()
     labels_test = data_test['labels'].numpy()
 
-    # 遍历数组并规范化
+    # Iterate over the array and normalize
     prefix = "Please select one activity from the previously mentioned ten digits and analyze the individual's handwriting based on the provided information.\nThe person is currently writing the digit "
     midfix = 'Physical activities that specifically involve using a pen to write digits, which range from one to ten.\n'
     
     for ecg, label in zip(samples_train, labels_train):
-        # # 检查是否为 NaN 值
+        # # Check whether values are NaN
         # padding_varying_length(ecg)
             
-        # 执行规范化操作，并将结果添加到列表中
-        ecg = normalize(ecg.astype(np.float32))  # 使用您的规范化函数
+        # Normalize the data and append the result to the list
+        ecg = normalize(ecg.astype(np.float32))  # Using the normalize() helper
 
         if int(label) == 0:
             text = 'zero'
@@ -1031,11 +1031,11 @@ def process_ad(data_folder='./datas/AD_data'):
             normalized_samples_train.append((text, ecg, label_vector))
     
     for ecg, label in zip(samples_test, labels_test):
-        # # 检查是否为 NaN 值
+        # # Check whether values are NaN
         # padding_varying_length(ecg)
             
-        # 执行规范化操作，并将结果添加到列表中
-        ecg = normalize(ecg.astype(np.float32))  # 使用您的规范化函数
+        # Normalize the data and append the result to the list
+        ecg = normalize(ecg.astype(np.float32))  # Using the normalize() helper
 
         if int(label) == 0:
             text = 'zero'
@@ -1097,7 +1097,7 @@ def process_esr(data_folder='./data/HAR'):
     samples = np.concatenate([samples_train, samples_val], axis=0)
     labels = np.concatenate([labels_train, labels_val], axis=0)
 
-    # 遍历数组并规范化
+    # Iterate over the array and normalize
     prefix = "Please choose one of the two previously mentioned labels and analyze the individual's condition for a possible epilepsy diagnosis based on the provided information.\nAt this moment, the individual is existing in a particular state of "
     midfix = "In the clinical evaluation, two labels are used to denote the patient's state: 'no abnormalities' for normal conditions and 'epileptic seizure' for seizure activity.\n"
     
@@ -1166,7 +1166,7 @@ def process_UWG(data_folder='./data/UWG'):
     
     print(labels_test)
 
-    # 遍历数组并规范化
+    # Iterate over the array and normalize
     prefix = "Please choose one of the eight labels to analysis people's gesture based on the provided information.\nThe man is currently showing the gesture of "
     midfix = "A set of eight simple gestures (musical corner, kicking, directing, reversing, ascending and descending arrow, clockwise and countercolockwise loop) generated from accelerometers.\n"
     
@@ -1250,7 +1250,7 @@ def process_PS(data_folder='./data/PS'):
     samples_test = np.load('./datas/PS/test_d.npy')
     labels_test = np.load('./datas/PS/test_l.npy')
 
-    # 遍历数组并规范化
+    # Iterate over the array and normalize
     prefix = "Please choose one of the thirty-nine labels to analyze the spectrogram characteristics of the phoneme based on the provided information.\nthe man is currently articulating the phoneme "
     midfix = "This data set is a multivaritate representation of a subset of the data used in the paper Dual-domain Hierarchical Classification of Phonetic Time Series.\n"
     
@@ -1314,13 +1314,13 @@ def process_PS(data_folder='./data/PS'):
     return normalized_samples_train, normalized_samples_test
 
 def parse_data_line(line):
-    # 将数据行分割为数值部分和标签部分
+    # Split each line into numeric values and labels
     data_str, label_str = line.split(':')
     
-    # 解析数据部分
+    # Parse the numeric data part
     data = list(map(float, data_str.split(',')))
     
-    # 解析标签部分
+    # Parse the label part
     label = int(label_str)
 
     return data, label
@@ -1334,20 +1334,20 @@ def read_data_and_labels_from_file(file_path):
             for line in file:
                 line = line.strip()
                 
-                # 跳过以 '@' 开头的行
+                # Skip lines starting with '@'
                 if line.startswith('@'):
                     continue
 
                 if line:
-                    # 解析数据行
+                    # Parse the data line
                     data, label = parse_data_line(line)
 
-                    # 追加到数据和标签列表
+                    # Append to data and label lists
                     data_points.append(data)
                     labels.append(label)
 
     except FileNotFoundError:
-        print(f"错误：未找到文件 '{file_path}'.")
+        print(f\"Error: file not found '{file_path}'.\")
 
     return data_points, labels
 
@@ -1366,16 +1366,16 @@ def process_device(data_folder='./data/device'):
     samples_train = np.concatenate([samples_train, samples_val], axis=0)
     labels_train = np.concatenate([labels_train, labels_val], axis=0)
 
-    # 遍历数组并规范化
+    # Iterate over the array and normalize
     prefix = "Selecting one from the above three status, please conduct an analysis of the machine's damage condition in accordance with the provided information.\nThe machine is probably participating in the subsequent damage conditions: "
     midfix = 'These damage conditions include not damaged, inner damaged, and outer damaged.\n'
     for ecg, label in zip(samples_train, labels_train):
-        # 检查是否为 NaN 值
+        # Check whether values are NaN
         if np.isnan(ecg).any():
-            continue  # 丢弃包含 NaN 值的 ECG 数据
+            continue  # Drop ECG samples that contain NaN values
             
-        # 执行规范化操作，并将结果添加到列表中
-        ecg = normalize(np.array(ecg).astype(np.float32)).reshape(-1, 1)  # 使用您的规范化函数
+        # Normalize the data and append the result to the list
+        ecg = normalize(np.array(ecg).astype(np.float32)).reshape(-1, 1)  # Using the normalize() helper
 
         if int(label) == 0:
             text = 'not damaged'
@@ -1394,12 +1394,12 @@ def process_device(data_folder='./data/device'):
             normalized_samples_train.append((text, ecg, label_vector))
 
     for ecg, label in zip(samples_test, labels_test):
-        # 检查是否为 NaN 值
+        # Check whether values are NaN
         if np.isnan(ecg).any():
-            continue  # 丢弃包含 NaN 值的 ECG 数据
+            continue  # Drop ECG samples that contain NaN values
             
-        # 执行规范化操作，并将结果添加到列表中
-        ecg = normalize(np.array(ecg).astype(np.float32)).reshape(-1, 1)  # 使用您的规范化函数
+        # Normalize the data and append the result to the list
+        ecg = normalize(np.array(ecg).astype(np.float32)).reshape(-1, 1)  # Using the normalize() helper
 
         if int(label) == 0:
             text = 'not damaged'
@@ -1462,7 +1462,7 @@ def process_ecg_bi(Path='./ecg_new'):
         modified_text, label = modify_text(text)
         samples_train[i] = (modified_text, ecg, label)
 
-    # 对测试数据集执行相同的操作
+    # Apply the same operation to the test dataset
     for i, sample in enumerate(samples_test):
         text, ecg, _ = sample
         modified_text, label = modify_text(text)
@@ -1497,7 +1497,7 @@ def process_side_info(Path='./ecg_no_big'):
         modified_text = modify_side_text(text)
         samples_train[i] = (modified_text, ecg, label)
 
-    # 对测试数据集执行相同的操作
+    # Apply the same operation to the test dataset
     for i, sample in enumerate(samples_test):
         text, ecg, label = sample
         modified_text = modify_side_text(text)
@@ -1534,7 +1534,7 @@ def process_label_info(Path='./whale_no_big'):
         modified_text = remove_line(text, 0)
         samples_train[i] = (modified_text, ecg, label)
 
-    # 对测试数据集执行相同的操作
+    # Apply the same operation to the test dataset
     for i, sample in enumerate(samples_test):
         text, ecg, label = sample
         modified_text = remove_line(text, 0)
@@ -1564,7 +1564,7 @@ def process_label_info(Path='./whale_no_big'):
         modified_text = remove_line(text, 0)
         samples_train[i] = (modified_text, ecg, label)
 
-    # 对测试数据集执行相同的操作
+    # Apply the same operation to the test dataset
     for i, sample in enumerate(samples_test):
         text, ecg, label = sample
         modified_text = remove_line(text, 0)
@@ -1584,7 +1584,7 @@ def extract_from_text(text, keyword):
     return ""
 
 def extract_all_information(text):
-    # 合并搜索，一次性提取所有信息
+    # Perform a single pass to extract all relevant information
     diagnosis = stage = har = dev = whale = ""
     if "include(s)" in text:
         diagnosis = extract_from_text(text, "include(s) ")
@@ -1599,14 +1599,14 @@ def extract_all_information(text):
     return diagnosis, stage, har, dev, whale
 
 def read_and_modify_last_line(input_string, modification_function):
-    # 将输入字符串拆分成行
+    # Split the input string into lines
     lines = input_string.split('\n')
     
-    # 如果字符串为空或只有一行，直接替换为修改后的行
+    # If the string is empty or has only one line, directly replace it with the modified line
     if len(lines) <= 1:
         return modification_function(lines[0])
     
-    # 读取最后一行并进行修改
+    # Read and modify the last line
     last_line = lines[-1]
     diagnosis, stage, har, dev, whale = extract_all_information(last_line)
     
@@ -1621,7 +1621,7 @@ def read_and_modify_last_line(input_string, modification_function):
     elif whale:
         lines[-1] = whale        
     
-    # 重新组合所有行并返回
+    # Reassemble all lines and return the result
     modified_string = '\n'.join(lines)
     return modified_string
 
@@ -1642,7 +1642,7 @@ def process_word_info(Path='./ecg_no_big'):
         modified_text = read_and_modify_last_line(text, 0)
         samples_train[i] = (modified_text, ecg, label)
 
-    # 对测试数据集执行相同的操作
+    # Apply the same operation to the test dataset
     for i, sample in enumerate(samples_test):
         text, ecg, label = sample
         modified_text = read_and_modify_last_line(text, 0)
@@ -1721,25 +1721,25 @@ def process_zero_shot(Path='./ecg_no_big'):
         with open(test_path, 'rb') as file:
             samples_test = pickle.load(file)
 
-    # # 统计训练数据集和测试数据集中的标签数量
+    # Count label occurrences in the train and test datasets
     # train_labels = [sample[2] for sample in samples_train]
     # test_labels = [sample[2] for sample in samples_test]
     
     # train_label_counts = Counter(train_labels)
     # test_label_counts = Counter(test_labels)
 
-    # print("训练数据集中的标签数量统计：")
+    # print("Label statistics for the training dataset:")
     # for label, count in train_label_counts.items():
-    #     print(f"标签 {label}: {count} 个样本")
+    #     print(f\"Label {label}: {count} samples in training set\")
 
-    # print("\n测试数据集中的标签数量统计：")
+    # print(\"\\nLabel statistics for the test dataset:\")
     # for label, count in test_label_counts.items():
-    #     print(f"标签 {label}: {count} 个样本")
+    #     print(f\"Label {label}: {count} samples in test set\")
 
-    # 删除训练集中所有标签为1的样本
+    # Remove all samples with label 1 from the training set
     samples_train = [sample for sample in samples_train if sample[2] != 2.0]
 
-    # 可以选择保存修改后的训练数据集
+    # Optionally save the modified training dataset
     with open('samples_train.pkl', 'wb') as file:
         pickle.dump(samples_train, file)
     with open('samples_test.pkl', 'wb') as file:
@@ -1748,14 +1748,14 @@ def process_zero_shot(Path='./ecg_no_big'):
     return samples_train, samples_test
 
 def process_info(input_string, modification_function):
-    # 将输入字符串拆分成行
+    # Split the input string into lines
     lines = input_string.split('\n')
     
-    # 如果字符串为空或只有一行，直接替换为修改后的行
+    # If the string is empty or has only one line, directly replace it with the modified line
     if len(lines) <= 1:
         return modification_function(lines[0])
     
-    # 读取最后一行并进行修改
+    # Read and modify the last line
     last_line = lines[-1]
     diagnosis, stage, har, dev, whale = extract_all_information(last_line)
     
@@ -1770,7 +1770,7 @@ def process_info(input_string, modification_function):
     elif whale:
         lines[-1] = whale        
     
-    # 重新组合所有行并返回
+    # Reassemble all lines and return the result
     modified_string = '\n'.join(lines)
     return modified_string
 
@@ -1786,25 +1786,25 @@ def process_gender(Path='./ecg_no_big'):
         with open(test_path, 'rb') as file:
             samples_test = pickle.load(file)
 
-    # # 统计训练数据集和测试数据集中的标签数量
+    # Count label occurrences in the train and test datasets
     # train_labels = [sample[2] for sample in samples_train]
     # test_labels = [sample[2] for sample in samples_test]
     
     # train_label_counts = Counter(train_labels)
     # test_label_counts = Counter(test_labels)
 
-    # print("训练数据集中的标签数量统计：")
+    # print("Label statistics for the training dataset:")
     # for label, count in train_label_counts.items():
-    #     print(f"标签 {label}: {count} 个样本")
+    #     print(f\"Label {label}: {count} samples in training set\")
 
-    # print("\n测试数据集中的标签数量统计：")
+    # print(\"\\nLabel statistics for the test dataset:\")
     # for label, count in test_label_counts.items():
-    #     print(f"标签 {label}: {count} 个样本")
+    #     print(f\"Label {label}: {count} samples in test set\")
 
-    # 删除训练集中所有标签为1的样本
+    # Remove all samples with label 1 from the training set
     samples_train = [sample for sample in samples_train if sample[2] != 2.0]
 
-    # 可以选择保存修改后的训练数据集
+    # Optionally save the modified training dataset
     with open('samples_train.pkl', 'wb') as file:
         pickle.dump(samples_train, file)
     with open('samples_test.pkl', 'wb') as file:
