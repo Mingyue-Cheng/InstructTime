@@ -81,7 +81,7 @@ class Trainer():
                     self.best_metric = metric[self.metric]
                 self.model.train()
 
-        return loss_sum / idx, time.perf_counter() - t0
+        return loss_sum / (idx + 1), time.perf_counter() - t0
 
     def eval_model_vqvae(self):
         self.model.eval()
@@ -92,7 +92,7 @@ class Trainer():
             for idx, batch in enumerate(tqdm_data_loader):
                 mse = self.cr.compute(batch)
                 metrics['mse'] -= mse
-        metrics['mse'] /= idx
+        metrics['mse'] /= idx + 1
         return metrics
     
     def print_process(self, *x):
