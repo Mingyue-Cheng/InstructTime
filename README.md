@@ -149,26 +149,14 @@ python main.py \
     --wave_length 32
 ```
 
-### Step 2: Train InstructTime
+### Step 2: Cross-Domain Autoregressive Pretraining
 
-#### Universal Training (Train from Scratch)
+First, perform cross-domain pretraining using all five domains jointly.
 
 ```bash
 cd ..  # Back to project root
 
-# Single domain training (e.g., HAR)
-python run_truth_loss.py \
-    --dataset har \
-    --model_path ./gptmodel \
-    --data_root ./datasets \
-    --vqvae_root ./vqvae \
-    --device cuda:0 \
-    --epochs 15 \
-    --batch_size 16 \
-    --lr 5e-5
-
-# Multi-domain training
-python run_truth_loss.py \
+python run_pretrain_universal.py \
     --dataset mix \
     --model_path ./gptmodel \
     --data_root ./datasets \
@@ -179,7 +167,27 @@ python run_truth_loss.py \
     --lr 5e-5
 ```
 
-#### Adaptation Training (Fine-tune from Pretrained)
+### Step 3: Supervised Fine-Tuning
+
+After pretraining, fine-tune using the pretrained model.
+
+#### Universal Training
+
+```bash
+python run_truth_loss.py \
+    --dataset mix \
+    --model_path ./gptmodel \
+    --load_model_path ./gptmodel/no_frozen/run_0/best_model \
+    --data_root ./datasets \
+    --vqvae_root ./vqvae \
+    --device cuda:0 \
+    --epochs 15 \
+    --batch_size 16 \
+    --lr 1e-5 \
+    --adapt
+```
+
+#### Adaptation Training
 
 ```bash
 python run_truth_loss.py \
@@ -189,6 +197,8 @@ python run_truth_loss.py \
     --data_root ./datasets \
     --vqvae_root ./vqvae \
     --device cuda:0 \
+    --epochs 15 \
+    --batch_size 16 \
     --lr 1e-5 \
     --adapt
 ```
@@ -214,7 +224,8 @@ InstructTime/
 ├── datasets/             # Dataset directory
 ├── vqvae/                # Trained tokenizer checkpoints
 ├── gpt2/                 # GPT-2 base model
-├── run_truth_loss.py     # Main training script
+├── run_pretrain_universal.py  # Cross-domain pretraining script
+├── run_truth_loss.py         # Supervised fine-tuning script
 ├── multidataset.py       # Dataset processing
 ├── multimodel.py         # Model definition
 ├── args.py               # Argument parser
